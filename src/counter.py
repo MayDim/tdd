@@ -7,6 +7,21 @@ app = Flask(__name__)
 
 COUNTERS = {}
 
+
+# Create a route for updating a counter using PUT
+@app.route('/counters/<name>', methods=['PUT'])
+def update_counter(name):
+    """Update a counter by 1"""
+    app.logger.info(f"Request to update counter: {name}")
+    
+    global COUNTERS
+    if name in COUNTERS:
+        COUNTERS[name] += 1
+        return {name: COUNTERS[name]}, status.HTTP_200_OK
+    else:
+        return {"error": "Counter not found"}, status.HTTP_404_NOT_FOUND
+
+
 # We will use the app decorator and create a route called slash counters.
 # specify the variable in route <name>
 # let Flask know that the only methods that is allowed to called
@@ -21,3 +36,6 @@ def create_counter(name):
     COUNTERS[name] = 0
     return {name: COUNTERS[name]}, status.HTTP_201_CREATED
 
+
+if __name__ == "__main__":
+    app.run()
