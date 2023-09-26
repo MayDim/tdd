@@ -21,8 +21,41 @@ from src.counter import app
 class CounterTest(TestCase):
     """Counter tests"""
 
+
+    def setUp(self):
+        self.client = app.test_client()
+
     def test_create_a_counter(self):
         """It should create a counter"""
         client = app.test_client()
         result = client.post('/counters/foo')
         self.assertEqual(result.status_code, status.HTTP_201_CREATED)
+    
+    def test_duplicate_a_counter(self):
+        """It should return an error for duplicates"""
+        result = self.client.post('/counters/bar')
+        self.assertEqual(result.status_code, status.HTTP_201_CREATED)
+        result = self.client.post('/counters/bar')
+        self.assertEqual(result.status_code, status.HTTP_409_CONFLICT)
+
+    
+    def test_update_a_counter(self):
+        """It should update a counter"""
+        # Create a counter
+        create_result = self.client.post('/counters/baz')
+        self.assertEqual(create_result.status_code, status.HTTP_201_CREATED)
+
+        # Check the counter value as a baseline
+        get_result = self.client.get('/counters/baz')
+        self.assertEqual(get_result.status_code, status.HTTP_200_OK)
+        baseline_value = get_result.json.get('baz')
+        
+        # Make a call to update the counter
+        update_result = self.client.put('/counters/baz')
+        self.assertEqual(update_result.status_code, status.HTTP_200_OK)
+
+        # Check that the counter value is one more than the baseline
+        get_result = self.client.get('/counters/baz')
+        self.assertEqual(get_result.status_code, status.HTTP_200_OK)
+        updated_value = get_result.json.get('baz')
+        self.assertEqual(updated_value, baseline_value + 1)
