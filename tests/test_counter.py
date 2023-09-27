@@ -16,6 +16,7 @@ from unittest import TestCase
 from src import status 
 # we need to import the unit under test - counter
 from src.counter import app 
+import json
 
 
 class CounterTest(TestCase):
@@ -39,23 +40,34 @@ class CounterTest(TestCase):
         self.assertEqual(result.status_code, status.HTTP_409_CONFLICT)
 
     
+
     def test_update_a_counter(self):
         """It should update a counter"""
-        # Create a counter
-        create_result = self.client.post('/counters/baz')
-        self.assertEqual(create_result.status_code, status.HTTP_201_CREATED)
+        # Step 1: Create a counter
+        result = self.client.post('/counters/baz')
+        self.assertEqual(result.status_code, status.HTTP_201_CREATED)
 
-        # Check the counter value as a baseline
+        # Step 2: Check the counter value as a baseline
         get_result = self.client.get('/counters/baz')
         self.assertEqual(get_result.status_code, status.HTTP_200_OK)
         baseline_value = get_result.json.get('baz')
         
-        # Make a call to update the counter
+        # Step 3: Make a call to update the counter
         update_result = self.client.put('/counters/baz')
         self.assertEqual(update_result.status_code, status.HTTP_200_OK)
 
-        # Check that the counter value is one more than the baseline
+        # Step 4: Check that the counter value is one more than the baseline
         get_result = self.client.get('/counters/baz')
         self.assertEqual(get_result.status_code, status.HTTP_200_OK)
         updated_value = get_result.json.get('baz')
         self.assertEqual(updated_value, baseline_value + 1)
+
+    def test_read_a_counter(self):
+        """It should read a counter"""
+        # Step 1: Create a counter
+        create_result = self.client.post('/counters/mycounter')
+        self.assertEqual(create_result.status_code, status.HTTP_201_CREATED)
+
+        # Step 2: Read the counter
+        read_result = self.client.get('/counters/mycounter')
+        self.assertEqual(read_result.status_code, status.HTTP_200_OK)
