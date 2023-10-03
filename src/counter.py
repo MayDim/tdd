@@ -18,7 +18,8 @@ def create_counter(name):
     app.logger.info(f"Request to create counter: {name}")
     global COUNTERS
     if name in COUNTERS:
-        return {"Message": f"Counter {name} already exists"}, status.HTTP_409_CONFLICT
+        return {"Message": f"Counter {name} already exists"},
+    status.HTTP_409_CONFLICT
     COUNTERS[name] = 0
     return {name: COUNTERS[name]}, status.HTTP_201_CREATED
 
@@ -28,16 +29,13 @@ def create_counter(name):
 def update_counter(name):
     """Update a counter by 1"""
     app.logger.info(f"Request to update counter: {name}")
-    
     global COUNTERS
     if name in COUNTERS:
         COUNTERS[name] += 1
         return {name: COUNTERS[name]}, status.HTTP_200_OK
-    
-   
-@app.route('/counters/<name>', methods = ['GET'])
+
+
+@app.route('/counters/<name>', methods=['GET'])
 def read_counter(name):
     """Read a counter"""
     return {name: COUNTERS[name]}, status.HTTP_200_OK
-
-
