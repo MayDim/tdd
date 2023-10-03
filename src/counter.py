@@ -37,12 +37,14 @@ def update_counter(name):
 @app.route('/counters/<name>', methods=['GET'])
 def read_counter(name):
     """Read a counter"""
+    app.logger.info(f"Request to read counter: {name}")
     return {name: COUNTERS[name]}, status.HTTP_200_OK
 
 
 @app.route('/counters/<name>', methods=['DELETE'])
 def delete_counter(name):
     """Delete a counter"""
+    app.logger.info(f"Request to delete counter: {name}")
     global COUNTERS
     if name in COUNTERS:
         del COUNTERS[name]
