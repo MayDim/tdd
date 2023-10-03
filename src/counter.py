@@ -38,3 +38,11 @@ def update_counter(name):
 def read_counter(name):
     """Read a counter"""
     return {name: COUNTERS[name]}, status.HTTP_200_OK
+
+@app.route('/counters/<name>', methods=['DELETE'])
+def delete_counter(name):
+    """Delete a counter"""
+    global COUNTERS
+    if name in COUNTERS:
+        del COUNTERS[name]
+        return '', status.HTTP_204_NO_CONTENT
